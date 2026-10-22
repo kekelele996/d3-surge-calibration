@@ -212,7 +212,7 @@ def test_tank_peak_fast():
     """「调压塔气室只有几十升，关阀不到 1 s」"""
     got = hidden("tank_1")
     want = expected("tank_1")["peak_head_m"]
-    assert abs(got["peak_head_m"] - want) <= 0.30
+    assert abs(got["peak_head_m"] - want) <= 0.10
 
 
 def test_tank_final_fast():
