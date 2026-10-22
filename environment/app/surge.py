@@ -219,7 +219,8 @@ def simulate(case):
             Qv = tau_now * Cd * Av * math.sqrt(2.0 * G * max(Hp - Hout, 0.0))
             Vg_new = Vg - (Qp - Qv) * dt
             Vg_new = max(Vg_new, 1e-6 * Vg0)
-            Hg = Ht0 * (Vg0 / Vg_new) ** 1.4
+            Patm_m = PATM / (rho * G)
+            Hg = (Ht0 + Patm_m) * (Vg0 / Vg_new) ** 1.4 - Patm_m
             z = (Vg0 - Vg_new) / At
             return Hg + z - Hp, Vg_new, T_gas
 

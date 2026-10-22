@@ -15,7 +15,7 @@
     "poisson_ratio": 0.4,
     "roughness": 1.5e-06,
     "axial_restraint": "free",
-    "unsteady_coefficient": 0.03
+    "unsteady_coefficient": 0.15
   },
   "valve": {
     "area": 0.004,
@@ -2441,7 +2441,7 @@
     "stations": [
       {
         "id": "S1",
-        "distance": 300.0
+        "distance": 1500.0
       },
       {
         "id": "S2",

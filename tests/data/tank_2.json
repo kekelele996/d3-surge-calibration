@@ -48,8 +48,8 @@
     "area": 0.012,
     "gas_volume": 0.05,
     "gas_temperature": 293.0,
-    "wall_temperature": 323.0,
-    "heat_transfer_coefficient": 100.0,
+    "wall_temperature": 343.0,
+    "heat_transfer_coefficient": 500.0,
     "gas_constant": 287.0,
     "cv": 718.0
   },

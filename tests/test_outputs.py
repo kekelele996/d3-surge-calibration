@@ -188,22 +188,22 @@ def test_air_wave_c():
 def test_unsteady_peak_a():
     """「关阀不到 1 s，瞬变摩阻不能只用稳态值」"""
     got = hidden("unsteady_1")
-    want = expected("unsteady_1")["peak_head_m"]
-    assert abs(got["peak_head_m"] - want) <= 0.20
+    want = expected("unsteady_1")["station_heads"]["S1"]
+    assert max_abs_diff(got["station_heads"]["S1"], want) <= 0.20
 
 
 def test_unsteady_peak_b():
     """「关阀不到 1 s，瞬变摩阻不能只用稳态值」"""
-    got = hidden("unsteady_2")
-    want = expected("unsteady_2")["peak_head_m"]
-    assert abs(got["peak_head_m"] - want) <= 0.20
+    got = hidden("unsteady_1")
+    want = expected("unsteady_1")["station_heads"]["S2"]
+    assert max_abs_diff(got["station_heads"]["S2"], want) <= 0.15
 
 
 def test_unsteady_trace_c():
     """「关阀不到 1 s，瞬变摩阻不能只用稳态值」"""
     got = hidden("unsteady_3")
-    want = expected("unsteady_3")["station_heads"]["S2"]
-    assert max_abs_diff(got["station_heads"]["S2"], want) <= 0.50
+    want = expected("unsteady_3")["station_heads"]["S1"]
+    assert max_abs_diff(got["station_heads"]["S1"], want) <= 0.20
 
 
 # ---------- 难点 3：气垫传热与非线性阀表 ----------
@@ -219,14 +219,14 @@ def test_tank_final():
     """「气室只有几十升，气室和塔壁有传热」"""
     got = hidden("tank_1")
     want = expected("tank_1")["final_head_m"]
-    assert abs(got["final_head_m"] - want) <= 1.0
+    assert abs(got["final_head_m"] - want) <= 0.30
 
 
 def test_tank_trace_b():
     """「气室只有几十升，气室和塔壁有传热」"""
     got = hidden("tank_2")
     want = expected("tank_2")["station_heads"]["S2"]
-    assert max_abs_diff(got["station_heads"]["S2"], want) <= 0.50
+    assert max_abs_diff(got["station_heads"]["S2"], want) <= 0.30
 
 
 def test_tank_trace():
