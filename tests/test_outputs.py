@@ -23,7 +23,8 @@ CANDIDATE_ENV = {
 }
 CALL_TIMEOUT_SEC = 120
 DATA = Path(__file__).resolve().parent / "data"
-EXPECTED = json.loads((Path(__file__).resolve().parent / "expected.json").read_text(encoding="utf-8"))
+with (Path(__file__).resolve().parent / "expected.json").open(encoding="utf-8") as _expected_handle:
+    EXPECTED = json.load(_expected_handle)
 CACHE = {}
 
 
@@ -60,7 +61,8 @@ def run_case(case_path, cache_key):
     report = folder / "report.json"
     proc = run_candidate(case_path, report)
     assert proc.returncode == 0, f"exit={proc.returncode} stderr={proc.stderr[-800:]}"
-    payload = json.loads(report.read_text(encoding="utf-8"))
+    with report.open(encoding="utf-8") as handle:
+        payload = json.load(handle)
     CACHE[cache_key] = payload
     return payload
 
@@ -97,7 +99,8 @@ def run_fresh(case_path):
     report = folder / "report.json"
     proc = run_candidate(case_path, report)
     assert proc.returncode == 0, f"exit={proc.returncode} stderr={proc.stderr[-800:]}"
-    return json.loads(report.read_text(encoding="utf-8"))
+    with report.open(encoding="utf-8") as handle:
+        return json.load(handle)
 
 
 # ---------- gate：入口与输出契约，不计分 ----------
