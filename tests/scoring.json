@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "gate_tests": [
+    "test_outputs.py::test_output_schema",
+    "test_outputs.py::test_wrong_argument_count_exits_2",
+    "test_outputs.py::test_repeatable_output",
+    "test_outputs.py::test_report_is_json_object"
+  ],
+  "tests": {
+    "test_outputs.py::test_air_wave_a": {
+      "weight": 0.14,
+      "rationale": "难点1 含气有效体积模量：含气率 1% 就能让波速偏离纯液体 3% 以上；难点合计 0.40"
+    },
+    "test_outputs.py::test_air_wave_b": {
+      "weight": 0.13,
+      "rationale": "难点1 含气有效体积模量：换水/钢管和 0.5% 含气率，确认不是单点"
+    },
+    "test_outputs.py::test_air_wave_c": {
+      "weight": 0.13,
+      "rationale": "难点1 含气有效体积模量：第三套参考压力 300 kPa，波速按局部混合物公式算；难点合计 0.40"
+    },
+    "test_outputs.py::test_unsteady_peak_a": {
+      "weight": 0.1,
+      "rationale": "难点2 Brunone 非恒定摩阻：快速关阀峰值，稳态摩阻偏低；难点合计 0.30"
+    },
+    "test_outputs.py::test_unsteady_peak_b": {
+      "weight": 0.1,
+      "rationale": "难点2 Brunone 非恒定摩阻：换一套管径和更大的 k"
+    },
+    "test_outputs.py::test_unsteady_trace_c": {
+      "weight": 0.1,
+      "rationale": "难点2 Brunone 非恒定摩阻：塔端整条序列，衰减和相位都要对"
+    },
+    "test_outputs.py::test_tank_peak": {
+      "weight": 0.075,
+      "rationale": "难点3 气垫传热/非线性阀表：快速关阀峰值，绝热+线性关阀偏低；难点合计 0.30"
+    },
+    "test_outputs.py::test_tank_final": {
+      "weight": 0.075,
+      "rationale": "难点3 气垫传热/非线性阀表：末段 10% 平均水头，传热改变气室压力"
+    },
+    "test_outputs.py::test_tank_trace": {
+      "weight": 0.075,
+      "rationale": "难点3 气垫传热/非线性阀表：塔端整条序列，传热和阀表都要对"
+    },
+    "test_outputs.py::test_tank_trace_b": {
+      "weight": 0.075,
+      "rationale": "难点3 气垫传热/非线性阀表：换一套小气室和更强的传热，塔端逐点也要对"
+    }
+  }
+}

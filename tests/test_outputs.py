@@ -1,0 +1,236 @@
+"""水锤瞬变仿真的验收测试。
+
+每个 test_ 的 docstring 用「」引用题面原句；分支与异常处理放在模块级辅助函数里。
+被测入口一律通过 run_candidate() 以 runner 身份、干净环境变量、独立进程组运行。
+期望值由 tests/expected.json 给出，来自独立的 320 格特征线复算，不由候选程序生成。
+"""
+
+import json
+import os
+import signal
+import subprocess
+import tempfile
+from pathlib import Path
+
+ENTRY = "/app/surge.py"
+PYTHON = "/usr/local/bin/python3"
+CANDIDATE_USER = "runner"
+CANDIDATE_ENV = {
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "HOME": "/home/runner",
+    "LANG": "C.UTF-8",
+    "TZ": "UTC",
+}
+CALL_TIMEOUT_SEC = 120
+DATA = Path(__file__).resolve().parent / "data"
+with (Path(__file__).resolve().parent / "expected.json").open(encoding="utf-8") as _expected_handle:
+    EXPECTED = json.load(_expected_handle)
+CACHE = {}
+
+
+def run_candidate(*args, timeout=CALL_TIMEOUT_SEC):
+    """以 runner 身份运行候选入口；超时结束整个进程组并抛出 TimeoutError。"""
+    as_root = os.getuid() == 0
+    proc = subprocess.Popen(
+        [PYTHON, ENTRY, *[str(a) for a in args]],
+        cwd="/app",
+        env=CANDIDATE_ENV,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        start_new_session=True,
+        user=CANDIDATE_USER if as_root else None,
+        group=CANDIDATE_USER if as_root else None,
+        extra_groups=[] if as_root else None,
+    )
+    try:
+        out, err = proc.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        os.killpg(proc.pid, signal.SIGKILL)
+        proc.communicate()
+        raise TimeoutError(f"{ENTRY} 超过 {timeout}s")
+    return subprocess.CompletedProcess(proc.args, proc.returncode, out, err)
+
+
+def run_case(case_path, cache_key):
+    """在可写的临时目录里运行一个算例，返回读取后的报告。"""
+    if cache_key in CACHE:
+        return CACHE[cache_key]
+    folder = Path(tempfile.mkdtemp(prefix="surge-"))
+    folder.chmod(0o777)
+    report = folder / "report.json"
+    proc = run_candidate(case_path, report)
+    assert proc.returncode == 0, f"exit={proc.returncode} stderr={proc.stderr[-800:]}"
+    with report.open(encoding="utf-8") as handle:
+        payload = json.load(handle)
+    CACHE[cache_key] = payload
+    return payload
+
+
+def visible(name):
+    return run_case(Path("/app/cases") / f"{name}.json", f"visible:{name}")
+
+
+def hidden(name):
+    return run_case(DATA / f"{name}.json", f"hidden:{name}")
+
+
+def expected(name):
+    return EXPECTED[name]
+
+
+def arrival_time(times, values, threshold=0.20):
+    """第一个偏离初始水头超过 threshold 的采样时刻。"""
+    v0 = values[0]
+    for t, v in zip(times, values):
+        if abs(v - v0) > threshold:
+            return float(t)
+    return None
+
+
+def max_abs_diff(left, right):
+    return max(abs(a - b) for a, b in zip(left, right))
+
+
+def run_fresh(case_path):
+    """不复用缓存地运行一次，用于重复性检查。"""
+    folder = Path(tempfile.mkdtemp(prefix="surge-fresh-"))
+    folder.chmod(0o777)
+    report = folder / "report.json"
+    proc = run_candidate(case_path, report)
+    assert proc.returncode == 0, f"exit={proc.returncode} stderr={proc.stderr[-800:]}"
+    with report.open(encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+# ---------- gate：入口与输出契约，不计分 ----------
+
+def test_output_schema():
+    """「报告里的字段集合恰好是六项，不能多也不能少」「算例文件里不一定带现场水头记录」"""
+    got = visible("steady")
+    assert set(got) == {
+        "case_id",
+        "wave_speed_m_s",
+        "friction_factor",
+        "peak_head_m",
+        "final_head_m",
+        "station_heads",
+    }
+    assert isinstance(got["wave_speed_m_s"], (int, float))
+    assert isinstance(got["friction_factor"], (int, float))
+    assert isinstance(got["peak_head_m"], (int, float))
+    assert isinstance(got["final_head_m"], (int, float))
+    assert set(got["station_heads"]) == {"S1", "S2"}
+    assert len(got["station_heads"]["S1"]) > 100
+    assert len(got["station_heads"]["S2"]) == len(got["station_heads"]["S1"])
+
+
+def test_wrong_argument_count_exits_2():
+    """「参数个数不对时退出码为 2，不写报告文件」"""
+    folder = Path(tempfile.mkdtemp(prefix="surge-args-"))
+    folder.chmod(0o777)
+    proc = run_candidate("/app/cases/steady.json")
+    assert proc.returncode == 2
+    assert list(folder.iterdir()) == []
+
+
+def test_repeatable_output():
+    """「同一份输入重复运行，结果必须一致」"""
+    first = visible("steady")
+    second = run_fresh("/app/cases/steady.json")
+    assert first == second
+
+
+def test_report_is_json_object():
+    """「报告里的字段集合恰好是六项，不能多也不能少」"""
+    folder = Path(tempfile.mkdtemp(prefix="surge-json-"))
+    folder.chmod(0o777)
+    report = folder / "report.json"
+    proc = run_candidate("/app/cases/steady.json", report)
+    assert proc.returncode == 0
+    text = report.read_text(encoding="utf-8")
+    payload = json.loads(text)
+    assert set(payload) == {
+        "case_id",
+        "wave_speed_m_s",
+        "friction_factor",
+        "peak_head_m",
+        "final_head_m",
+        "station_heads",
+    }
+
+
+# ---------- 难点 1：含气液体的有效体积模量 ----------
+
+def test_air_wave_a():
+    """「这段液体里夹着气泡，含气率按体积分数给」"""
+    got = hidden("air_1")
+    want = expected("air_1")["wave_speed_m_s"]
+    assert abs(got["wave_speed_m_s"] - want) / want < 0.01
+
+
+def test_air_wave_b():
+    """「这段液体里夹着气泡，含气率按体积分数给」"""
+    got = hidden("air_2")
+    want = expected("air_2")["wave_speed_m_s"]
+    assert abs(got["wave_speed_m_s"] - want) / want < 0.01
+
+
+def test_air_wave_c():
+    """「这段液体里夹着气泡，含气率按体积分数给」"""
+    got = hidden("air_3")
+    want = expected("air_3")["wave_speed_m_s"]
+    assert abs(got["wave_speed_m_s"] - want) / want < 0.01
+
+
+# ---------- 难点 2：Brunone 非恒定摩阻 ----------
+
+def test_unsteady_peak_a():
+    """「关阀不到 1 s，瞬变摩阻不能只用稳态值」"""
+    got = hidden("unsteady_1")
+    want = expected("unsteady_1")["peak_head_m"]
+    assert abs(got["peak_head_m"] - want) <= 0.20
+
+
+def test_unsteady_peak_b():
+    """「关阀不到 1 s，瞬变摩阻不能只用稳态值」"""
+    got = hidden("unsteady_2")
+    want = expected("unsteady_2")["peak_head_m"]
+    assert abs(got["peak_head_m"] - want) <= 0.20
+
+
+def test_unsteady_trace_c():
+    """「关阀不到 1 s，瞬变摩阻不能只用稳态值」"""
+    got = hidden("unsteady_3")
+    want = expected("unsteady_3")["station_heads"]["S2"]
+    assert max_abs_diff(got["station_heads"]["S2"], want) <= 0.50
+
+
+# ---------- 难点 3：气垫传热与非线性阀表 ----------
+
+def test_tank_peak():
+    """「气室只有几十升，气室和塔壁有传热」"""
+    got = hidden("tank_1")
+    want = expected("tank_1")["peak_head_m"]
+    assert abs(got["peak_head_m"] - want) <= 0.10
+
+
+def test_tank_final():
+    """「气室只有几十升，气室和塔壁有传热」"""
+    got = hidden("tank_1")
+    want = expected("tank_1")["final_head_m"]
+    assert abs(got["final_head_m"] - want) <= 1.0
+
+
+def test_tank_trace_b():
+    """「气室只有几十升，气室和塔壁有传热」"""
+    got = hidden("tank_2")
+    want = expected("tank_2")["station_heads"]["S2"]
+    assert max_abs_diff(got["station_heads"]["S2"], want) <= 0.50
+
+
+def test_tank_trace():
+    """「气室只有几十升，气室和塔壁有传热」"""
+    got = hidden("tank_3")
+    want = expected("tank_3")["station_heads"]["S2"]
+    assert max_abs_diff(got["station_heads"]["S2"], want) <= 1.0
