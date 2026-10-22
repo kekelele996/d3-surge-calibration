@@ -37,6 +37,19 @@
 - `final_head_m`：塔端水头序列末段 10% 采样的平均值，m。
 - `station_heads`：键是测点 `id`，值是按 `times` 顺序排列的水头，m。
 
+报告的结构是：
+
+```json
+{
+  "case_id": "字符串",
+  "wave_speed_m_s": "数值",
+  "friction_factor": "数值",
+  "peak_head_m": "数值",
+  "final_head_m": "数值",
+  "station_heads": {"测点 id": ["数值", "..."]}
+}
+```
+
 报告要写出波速、摩阻系数、塔端峰值水头、末态水头和两个测点的水头序列。参数个数不对时退出码为 2，不写报告文件。
 
 ## 约束

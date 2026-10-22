@@ -19,10 +19,7 @@ D1_FIXED = '''def wave_speed(fluid, pipe):
     D = float(pipe["diameter"])
     e = float(pipe["wall_thickness"])
     E = float(pipe["youngs_modulus"])
-    nu = float(pipe.get("poisson_ratio", 0.3))
-    c1 = 1.0
-    if pipe.get("axial_restraint", "free") == "anchored":
-        c1 = 1.0 - nu * nu
+    c1 = pipe_support_constant(pipe)
     return math.sqrt((K / rho) / (1.0 + K * D / (E * e) * c1))
 '''
 
@@ -42,15 +39,7 @@ D2_FIXED = '''def friction_factor(Re, roughness, diameter):
         return 0.02
     if Re < 2000.0:
         return 64.0 / Re
-    f = 0.02
-    for _ in range(60):
-        rhs = -2.0 * math.log10(roughness / (3.7 * diameter) + 2.51 / (Re * math.sqrt(f)))
-        f_new = 1.0 / (rhs * rhs)
-        if abs(f_new - f) < 1e-13:
-            f = f_new
-            break
-        f = f_new
-    return f
+    return _colebrook(Re, roughness, diameter)
 '''
 
 D2_ORIGINAL = '''def friction_factor(Re, roughness, diameter):

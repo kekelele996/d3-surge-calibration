@@ -14,6 +14,14 @@ import sys
 G = 9.80665
 
 
+def pipe_support_constant(pipe):
+    """按管道的轴向约束返回面积柔度系数。"""
+    nu = float(pipe.get("poisson_ratio", 0.3))
+    if pipe.get("axial_restraint", "free") == "anchored":
+        return 1.0 - nu * nu
+    return 1.0
+
+
 def wave_speed(fluid, pipe):
     """薄壁管道的压力波速，按管道的轴向约束计算。"""
     K = float(fluid["bulk_modulus"])
@@ -21,11 +29,20 @@ def wave_speed(fluid, pipe):
     D = float(pipe["diameter"])
     e = float(pipe["wall_thickness"])
     E = float(pipe["youngs_modulus"])
-    nu = float(pipe.get("poisson_ratio", 0.3))
-    c1 = 1.0
-    if pipe.get("axial_restraint", "free") == "anchored":
-        c1 = 1.0 - nu * nu
+    c1 = pipe_support_constant(pipe)
     return math.sqrt((K / rho) / (1.0 + K * D / (E * e) * c1))
+
+
+def _colebrook(Re, roughness, diameter):
+    """湍流达西摩阻系数的隐式迭代。"""
+    f = 0.02
+    for _ in range(60):
+        rhs = -2.0 * math.log10(roughness / (3.7 * diameter) + 2.51 / (Re * math.sqrt(f)))
+        f_new = 1.0 / (rhs * rhs)
+        if abs(f_new - f) < 1e-13:
+            return f_new
+        f = f_new
+    return f
 
 
 def friction_factor(Re, roughness, diameter):
@@ -34,15 +51,7 @@ def friction_factor(Re, roughness, diameter):
         return 0.02
     if Re < 2000.0:
         return 64.0 / Re
-    f = 0.02
-    for _ in range(60):
-        rhs = -2.0 * math.log10(roughness / (3.7 * diameter) + 2.51 / (Re * math.sqrt(f)))
-        f_new = 1.0 / (rhs * rhs)
-        if abs(f_new - f) < 1e-13:
-            f = f_new
-            break
-        f = f_new
-    return f
+    return _colebrook(Re, roughness, diameter)
 
 
 def steady_state(case):

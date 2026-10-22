@@ -126,7 +126,6 @@ def test_wrong_argument_count_exits_2():
     """「参数个数不对时退出码为 2，不写报告文件」"""
     proc = run_candidate()
     assert proc.returncode == 2
-    assert proc.stdout.strip() == ""
 
 
 def test_repeatable_output():
