@@ -106,7 +106,7 @@ def run_fresh(case_path):
 # ---------- gate：入口与输出契约，不计分 ----------
 
 def test_output_schema():
-    """「报告里的字段集合恰好是六项，不能多也不能少」「新算例不一定带这段记录」"""
+    """「报告里的字段集合恰好是六项，不能多也不能少」「算例文件里不一定带现场水头记录」"""
     got = visible("steady")
     assert set(got) == {
         "case_id",

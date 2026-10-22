@@ -52,7 +52,7 @@
 
 - 真实数据：无。本题的试验记录是按一维瞬变模型生成的合成数据，用于覆盖参数包线；`research/sources.md` 已说明，`environment/` 内不放生成脚本或来源说明。
 - 生成规则：`research/make_cases.py` 调用 `research/reference_model.py`，用 320 格特征线模型生成 9 个隐藏算例和 2 个可见算例；参数固定，无随机种子。
-- 可见算例：`environment/app/cases/commissioning.json`（带 `measured` 对照）和 `steady.json`；隐藏算例在 `tests/data/`，不带 `measured`。
+- 可见算例：`environment/app/cases/commissioning.json`（不带现场记录）和 `steady.json`；隐藏算例在 `tests/data/`。
 - 期望值：`tests/expected.json` 由 `research/make_cases.py` 生成，不由候选程序或 `solution/` 代码生成。
 
 ## 答案隔离
@@ -61,4 +61,4 @@
 - [x] 注释、文件名、变量名、数据元信息没有写出 `Colebrook`、`1-nu^2`、`n=1.4` 等答案；`environment/app/surge.py` 里只有可运行的近似写法。
 - [x] Dockerfile 没有先复制正确版本再改坏。
 - [x] `tests/` 和 `solution/` 不在 `environment/` 的构建上下文里。
-- [x] `commissioning.json` 的 `measured` 只用于人工对照；隐藏算例不带该字段，候选不能靠复制记录得分。
+- [x] `commissioning.json` 和隐藏算例都不带现场记录；候选不能靠复制记录得分。
