@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "gate_tests": [
+    "test_outputs.py::test_output_schema",
+    "test_outputs.py::test_wrong_argument_count_exits_2",
+    "test_outputs.py::test_repeatable_output"
+  ],
+  "tests": {
+    "test_outputs.py::test_wave_speed_anchored_a": {
+      "weight": 0.14,
+      "rationale": "难点1 锚固段波速：核心物理量，轴向约束错时波速偏 8% 以上；难点合计 0.40"
+    },
+    "test_outputs.py::test_wave_speed_anchored_b": {
+      "weight": 0.13,
+      "rationale": "难点1 锚固段波速：换一套管径与壁厚，确认不是只对一个算例成立"
+    },
+    "test_outputs.py::test_wave_speed_anchored_c": {
+      "weight": 0.13,
+      "rationale": "难点1 锚固段波速：第三套管径与壁厚，波速按轴向约束计算；难点合计 0.40"
+    },
+    "test_outputs.py::test_friction_rough_a": {
+      "weight": 0.1,
+      "rationale": "难点2 粗糙管摩阻：初始达西系数，光滑管公式在粗糙管上偏 50%；难点合计 0.30"
+    },
+    "test_outputs.py::test_friction_rough_b": {
+      "weight": 0.1,
+      "rationale": "难点2 粗糙管摩阻：换一套管径与流量，确认粗糙度影响不是单点"
+    },
+    "test_outputs.py::test_rough_steady_head": {
+      "weight": 0.1,
+      "rationale": "难点2 粗糙管摩阻：首端稳态水头的行为检查，摩阻错时偏高 1 m 以上"
+    },
+    "test_outputs.py::test_tank_peak_fast": {
+      "weight": 0.1,
+      "rationale": "难点3 调压塔：快速关阀峰值，气垫过程与水位项错时偏低约 11 m；难点合计 0.30"
+    },
+    "test_outputs.py::test_tank_final_fast": {
+      "weight": 0.1,
+      "rationale": "难点3 调压塔：末段 10% 平均水头，水位项错时偏高约 19 m"
+    },
+    "test_outputs.py::test_tank_trace_fast": {
+      "weight": 0.1,
+      "rationale": "难点3 调压塔：塔端整条水头序列，峰值与末态都对不上时逐点误差超过 2 m"
+    }
+  }
+}
