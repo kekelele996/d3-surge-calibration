@@ -9,5 +9,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN useradd --create-home --uid 1000 runner
 
 WORKDIR /app
+
+# Agent runtime only; the candidate program uses the Python standard library.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends nodejs npm curl procps \
+    && rm -rf /var/lib/apt/lists/*
 COPY app/ /app/
 RUN chown -R runner:runner /app
