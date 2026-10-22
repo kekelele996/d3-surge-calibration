@@ -138,6 +138,25 @@ def test_repeatable_output():
     assert first == second
 
 
+def test_report_is_json_object():
+    """「报告里的字段集合恰好是六项，不能多也不能少」"""
+    folder = Path(tempfile.mkdtemp(prefix="surge-json-"))
+    folder.chmod(0o777)
+    report = folder / "report.json"
+    proc = run_candidate("/app/cases/steady.json", report)
+    assert proc.returncode == 0
+    text = report.read_text(encoding="utf-8")
+    payload = json.loads(text)
+    assert set(payload) == {
+        "case_id",
+        "wave_speed_m_s",
+        "friction_factor",
+        "peak_head_m",
+        "final_head_m",
+        "station_heads",
+    }
+
+
 # ---------- 难点 1：锚固段的波速 ----------
 
 def test_wave_speed_anchored_a():

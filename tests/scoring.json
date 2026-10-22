@@ -3,7 +3,8 @@
   "gate_tests": [
     "test_outputs.py::test_output_schema",
     "test_outputs.py::test_wrong_argument_count_exits_2",
-    "test_outputs.py::test_repeatable_output"
+    "test_outputs.py::test_repeatable_output",
+    "test_outputs.py::test_report_is_json_object"
   ],
   "tests": {
     "test_outputs.py::test_wave_speed_anchored_a": {
