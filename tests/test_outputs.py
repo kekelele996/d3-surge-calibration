@@ -103,7 +103,7 @@ def run_fresh(case_path):
 # ---------- gate：入口与输出契约，不计分 ----------
 
 def test_output_schema():
-    """「报告要写出波速、摩阻系数、塔端峰值水头、末态水头和两个测点的水头序列」"""
+    """「报告里的六项要一次写全，不能多也不能少」"""
     got = visible("steady")
     assert set(got) == {
         "case_id",
@@ -138,21 +138,21 @@ def test_repeatable_output():
 # ---------- 难点 1：锚固段的波速 ----------
 
 def test_wave_speed_anchored_a():
-    """「锚固段的压力波速要按管道的轴向约束计算」"""
+    """「这条线一段埋在锚固墩里，一段装了伸缩节」"""
     got = hidden("anchored_1")
     want = expected("anchored_1")["wave_speed_m_s"]
     assert abs(got["wave_speed_m_s"] - want) / want < 0.01
 
 
 def test_wave_speed_anchored_b():
-    """「锚固段的压力波速要按管道的轴向约束计算」"""
+    """「这条线一段埋在锚固墩里，一段装了伸缩节」"""
     got = hidden("anchored_2")
     want = expected("anchored_2")["wave_speed_m_s"]
     assert abs(got["wave_speed_m_s"] - want) / want < 0.01
 
 
 def test_wave_speed_anchored_c():
-    """「锚固段的压力波速要按管道的轴向约束计算」"""
+    """「这条线一段埋在锚固墩里，一段装了伸缩节」"""
     got = hidden("anchored_3")
     want = expected("anchored_3")["wave_speed_m_s"]
     assert abs(got["wave_speed_m_s"] - want) / want < 0.01
@@ -161,21 +161,21 @@ def test_wave_speed_anchored_c():
 # ---------- 难点 2：粗糙管的沿程摩阻 ----------
 
 def test_friction_rough_a():
-    """「粗糙旧管在高流量下，首端稳态压力比工具算的低」"""
+    """「旧钢管这段粗糙度 0.15 到 0.25 mm」"""
     got = hidden("rough_1")
     want = expected("rough_1")["friction_factor"]
     assert abs(got["friction_factor"] - want) / want < 0.03
 
 
 def test_friction_rough_b():
-    """「粗糙旧管在高流量下，首端稳态压力比工具算的低」"""
+    """「旧钢管这段粗糙度 0.15 到 0.25 mm」"""
     got = hidden("rough_2")
     want = expected("rough_2")["friction_factor"]
     assert abs(got["friction_factor"] - want) / want < 0.03
 
 
 def test_rough_steady_head():
-    """「粗糙旧管在高流量下，首端稳态压力比工具算的低」"""
+    """「旧钢管这段粗糙度 0.15 到 0.25 mm」"""
     got = hidden("rough_3")
     want = expected("rough_3")["station_heads"]["S1"][0]
     assert abs(got["station_heads"]["S1"][0] - want) <= 0.20
@@ -184,21 +184,21 @@ def test_rough_steady_head():
 # ---------- 难点 3：快速关阀时的调压塔 ----------
 
 def test_tank_peak_fast():
-    """「快速关阀时，调压塔的峰值水头和末态水头与现场记录对不上」"""
+    """「调压塔气室只有几十升，关阀不到 1 s」"""
     got = hidden("tank_1")
     want = expected("tank_1")["peak_head_m"]
     assert abs(got["peak_head_m"] - want) <= 0.30
 
 
 def test_tank_final_fast():
-    """「快速关阀时，调压塔的峰值水头和末态水头与现场记录对不上」"""
+    """「调压塔气室只有几十升，关阀不到 1 s」"""
     got = hidden("tank_2")
     want = expected("tank_2")["final_head_m"]
     assert abs(got["final_head_m"] - want) <= 1.0
 
 
 def test_tank_trace_fast():
-    """「快速关阀时，调压塔的峰值水头和末态水头与现场记录对不上」"""
+    """「调压塔气室只有几十升，关阀不到 1 s」"""
     got = hidden("tank_3")
     want = expected("tank_3")["station_heads"]["S2"]
     assert max_abs_diff(got["station_heads"]["S2"], want) <= 1.0
