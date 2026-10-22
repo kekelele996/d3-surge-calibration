@@ -93,6 +93,22 @@ def steady_state(case):
     return Ht, Q, f
 
 
+def validate_case(case):
+    """检查输入字段和基本取值范围。"""
+    if not isinstance(case, dict):
+        raise ValueError("case must be an object")
+    for key in ("fluid", "pipe", "valve", "surge_tank", "measurement"):
+        if key not in case:
+            raise ValueError(f"missing {key}")
+    if float(case["pipe"]["length"]) <= 0.0:
+        raise ValueError("pipe length must be positive")
+    if float(case["pipe"]["diameter"]) <= 0.0:
+        raise ValueError("pipe diameter must be positive")
+    if float(case["surge_tank"]["gas_volume"]) <= 0.0:
+        raise ValueError("gas volume must be positive")
+    return case
+
+
 def simulate(case):
     fluid = case["fluid"]
     pipe = case["pipe"]
@@ -225,7 +241,7 @@ def main(argv):
         return 2
     try:
         with open(argv[1], "r", encoding="utf-8") as handle:
-            case = json.load(handle)
+            case = validate_case(json.load(handle))
         report = simulate(case)
         with open(argv[2], "w", encoding="utf-8") as handle:
             json.dump(report, handle, ensure_ascii=False, sort_keys=True)

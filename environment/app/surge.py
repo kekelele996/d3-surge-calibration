@@ -14,23 +14,32 @@ import sys
 G = 9.80665
 
 
+def pipe_support_constant(pipe):
+    """按上游端锚固的薄壁管取面积柔度系数。"""
+    nu = float(pipe.get("poisson_ratio", 0.3))
+    if pipe.get("axial_restraint", "free") == "anchored":
+        return 1.0 - nu / 2.0
+    return 1.0
+
+
 def wave_speed(fluid, pipe):
-    """薄壁管道的压力波速，按伸缩节自由轴向变形计算。"""
+    """薄壁管道的压力波速，按管道的轴向约束计算。"""
     K = float(fluid["bulk_modulus"])
     rho = float(fluid["density"])
     D = float(pipe["diameter"])
     e = float(pipe["wall_thickness"])
     E = float(pipe["youngs_modulus"])
-    return math.sqrt((K / rho) / (1.0 + K * D / (E * e)))
+    c1 = pipe_support_constant(pipe)
+    return math.sqrt((K / rho) / (1.0 + K * D / (E * e) * c1))
 
 
 def friction_factor(Re, roughness, diameter):
-    """达西摩阻系数：层流用 64/Re，湍流用光滑管布拉修斯式。"""
+    """达西摩阻系数：层流用 64/Re，湍流按完全粗糙区近似。"""
     if Re < 1e-9:
         return 0.02
     if Re < 2000.0:
         return 64.0 / Re
-    return 0.3164 / (Re ** 0.25)
+    return 0.25 / (math.log10(roughness / (3.7 * diameter)) ** 2)
 
 
 def steady_state(case):
@@ -88,6 +97,7 @@ def simulate(case):
     Av = float(valve["area"])
     Cd = float(valve["discharge_coefficient"])
     Vg0 = float(tank["gas_volume"])
+    At = float(tank["area"])
     Tclose = float(valve["closure_time"])
 
     Ht0, Q0, f0 = steady_state(case)
@@ -153,8 +163,10 @@ def simulate(case):
             Qv = tau_now * Cd * Av * math.sqrt(2.0 * G * max(Hp - Hout, 0.0))
             Vg_new = Vg - (Qp - Qv) * dt
             Vg_new = max(Vg_new, 1e-6 * Vg0)
-            Hg = Ht0 * (Vg0 / Vg_new) ** 1.0
-            return Hg - Hp, Vg_new
+            Patm = 10.33
+            Hg = (Ht0 + Patm) * (Vg0 / Vg_new) ** 1.4 - Patm
+            z = (Vg0 - Vg_new) / At
+            return Hg + z - Hp, Vg_new
 
         lo = Hout
         hi = max(Ht + 20.0, Hres + 20.0)

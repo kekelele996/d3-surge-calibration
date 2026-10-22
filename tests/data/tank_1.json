@@ -20,8 +20,8 @@
     "closure_time": 0.8
   },
   "surge_tank": {
-    "area": 0.02,
-    "gas_volume": 0.1
+    "area": 0.015,
+    "gas_volume": 0.07
   },
   "reservoir_head": 80.0,
   "downstream_head": 5.0,

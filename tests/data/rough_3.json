@@ -11,7 +11,7 @@
     "wall_thickness": 0.006,
     "youngs_modulus": 200000000000.0,
     "poisson_ratio": 0.3,
-    "roughness": 0.0006,
+    "roughness": 0.00025,
     "axial_restraint": "free"
   },
   "valve": {

@@ -178,7 +178,7 @@ def test_rough_steady_head():
     """「粗糙旧管在高流量下，首端稳态压力比工具算的低」"""
     got = hidden("rough_3")
     want = expected("rough_3")["station_heads"]["S1"][0]
-    assert abs(got["station_heads"]["S1"][0] - want) <= 0.30
+    assert abs(got["station_heads"]["S1"][0] - want) <= 0.20
 
 
 # ---------- 难点 3：快速关阀时的调压塔 ----------
@@ -187,7 +187,7 @@ def test_tank_peak_fast():
     """「快速关阀时，调压塔的峰值水头和末态水头与现场记录对不上」"""
     got = hidden("tank_1")
     want = expected("tank_1")["peak_head_m"]
-    assert abs(got["peak_head_m"] - want) <= 1.0
+    assert abs(got["peak_head_m"] - want) <= 0.30
 
 
 def test_tank_final_fast():
