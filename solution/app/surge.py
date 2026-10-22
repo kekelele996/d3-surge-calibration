@@ -149,7 +149,18 @@ def simulate(case):
     Ht = Ht0
     next_rec = 0
 
+    table = valve.get("position_table")
+
     def tau(t):
+        if table:
+            if t <= float(table[0][0]):
+                return float(table[0][1])
+            for k in range(1, len(table)):
+                t0, v0 = float(table[k - 1][0]), float(table[k - 1][1])
+                t1, v1 = float(table[k][0]), float(table[k][1])
+                if t <= t1:
+                    return v1 if t1 <= t0 else v0 + (v1 - v0) * (t - t0) / (t1 - t0)
+            return float(table[-1][1])
         return 0.0 if t >= Tclose else 1.0 - t / Tclose
 
     def station_head(s):

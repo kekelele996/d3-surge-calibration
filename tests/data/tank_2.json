@@ -17,7 +17,29 @@
   "valve": {
     "area": 0.0008,
     "discharge_coefficient": 0.62,
-    "closure_time": 0.6
+    "closure_time": 0.6,
+    "position_table": [
+      [
+        0.0,
+        1.0
+      ],
+      [
+        0.1,
+        0.95
+      ],
+      [
+        0.25,
+        0.7
+      ],
+      [
+        0.45,
+        0.25
+      ],
+      [
+        0.6,
+        0.0
+      ]
+    ]
   },
   "surge_tank": {
     "area": 0.012,

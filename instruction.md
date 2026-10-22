@@ -16,7 +16,7 @@
 
 `python3 /app/surge.py <case.json> <report.json>`
 
-输入 JSON 分五段：fluid 是流体物性，pipe 是管道几何和支承，valve 是阀门，surge_tank 是调压塔，measurement 是采样时刻和测点。每段的键和单位照 commissioning.json 抄。
+输入 JSON 分五段：fluid 是流体物性，pipe 是管道几何和支承，valve 是阀门，surge_tank 是调压塔，measurement 是采样时刻和测点。每段的键和单位照 commissioning.json 抄。valve 里可能有 position_table，按时间给开度，范围 0 到 1；没有这张表就按 closure_time 线性关。
 
 输出写到第二个参数指定的文件，是一个 JSON 对象：
 
