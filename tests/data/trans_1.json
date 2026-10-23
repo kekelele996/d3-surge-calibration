@@ -1,0 +1,179 @@
+{
+  "case_id": "trans_1",
+  "fluid": {
+    "density": 971.8,
+    "specific_heat": 4190.0,
+    "kinematic_viscosity": 3.5e-07
+  },
+  "ambient": {
+    "ground_temperature": 5.0
+  },
+  "plant": {
+    "supply_temperature": 90.0,
+    "node_supply": "S0",
+    "node_return": "R0",
+    "pump": {
+      "curve": [
+        [
+          0,
+          30
+        ],
+        [
+          10,
+          28
+        ],
+        [
+          20,
+          22
+        ]
+      ],
+      "speed": 1.0
+    },
+    "supply_profile": [
+      [
+        0,
+        90
+      ],
+      [
+        600,
+        90
+      ],
+      [
+        601,
+        70
+      ],
+      [
+        3600,
+        70
+      ]
+    ]
+  },
+  "pipes": [
+    {
+      "id": "PS1",
+      "from": "S0",
+      "to": "S1",
+      "length": 120,
+      "diameter": 0.15,
+      "roughness": 0.0001,
+      "minor_loss": 2.0
+    },
+    {
+      "id": "PS2",
+      "from": "S1",
+      "to": "S2",
+      "length": 90,
+      "diameter": 0.12,
+      "roughness": 0.0001,
+      "minor_loss": 2.0
+    },
+    {
+      "id": "PR1",
+      "from": "R1",
+      "to": "R0",
+      "length": 120,
+      "diameter": 0.15,
+      "roughness": 0.0001,
+      "minor_loss": 2.0
+    },
+    {
+      "id": "PR2",
+      "from": "R2",
+      "to": "R1",
+      "length": 90,
+      "diameter": 0.12,
+      "roughness": 0.0001,
+      "minor_loss": 2.0
+    }
+  ],
+  "consumers": [
+    {
+      "id": "C1",
+      "node_supply": "S1",
+      "node_return": "R1",
+      "heat_load": 120000,
+      "valve": {
+        "position": 1.0,
+        "kv": 0.00025
+      },
+      "load_profile": [
+        [
+          0,
+          120000
+        ],
+        [
+          900,
+          120000
+        ],
+        [
+          901,
+          180000
+        ],
+        [
+          3600,
+          180000
+        ]
+      ]
+    },
+    {
+      "id": "C2",
+      "node_supply": "S2",
+      "node_return": "R2",
+      "heat_load": 90000,
+      "valve": {
+        "position": 1.0,
+        "kv": 0.00022
+      }
+    }
+  ],
+  "measurement": {
+    "duration": 3600.0,
+    "times": [
+      0.0,
+      120.0,
+      240.0,
+      360.0,
+      480.0,
+      600.0,
+      720.0,
+      840.0,
+      960.0,
+      1080.0,
+      1200.0,
+      1320.0,
+      1440.0,
+      1560.0,
+      1680.0,
+      1800.0,
+      1920.0,
+      2040.0,
+      2160.0,
+      2280.0,
+      2400.0,
+      2520.0,
+      2640.0,
+      2760.0,
+      2880.0,
+      3000.0,
+      3120.0,
+      3240.0,
+      3360.0,
+      3480.0,
+      3600.0
+    ],
+    "stations": [
+      {
+        "id": "S1",
+        "node": "S1"
+      },
+      {
+        "id": "S2",
+        "node": "S2"
+      },
+      {
+        "id": "R0",
+        "node": "R0"
+      }
+    ]
+  }
+}

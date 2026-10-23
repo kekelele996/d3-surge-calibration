@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "gate_tests": [
+    "test_outputs.py::test_output_schema",
+    "test_outputs.py::test_wrong_argument_count_exits_2",
+    "test_outputs.py::test_repeatable_output",
+    "test_outputs.py::test_report_is_json_object"
+  ],
+  "tests": {
+    "test_outputs.py::test_loop_flow_a": {"weight": 0.14, "rationale": "D1 多环水力：环路边 PS3 的流量，错误环境忽略 loop 管段会直接变 0；D1 合计 0.40"},
+    "test_outputs.py::test_loop_flow_b": {"weight": 0.13, "rationale": "D1 多环水力：回水环路边 PR3，换一套尺寸"},
+    "test_outputs.py::test_loop_pressure_c": {"weight": 0.13, "rationale": "D1 多环水力：小管网节点压力，环路缺失会改变压降分配"},
+    "test_outputs.py::test_supply_temp_a": {"weight": 0.10, "rationale": "D2 热损+混合：S1 供水温度，忽略热损会偏高；D2 合计 0.30"},
+    "test_outputs.py::test_plant_return_b": {"weight": 0.10, "rationale": "D2 热损+混合：大温差工况的plant回水温度"},
+    "test_outputs.py::test_return_temp_c": {"weight": 0.10, "rationale": "D2 热损+混合：R1 回水温度，混合与热损都要对"},
+    "test_outputs.py::test_transient_a": {"weight": 0.075, "rationale": "D3 输运延迟+惯性：S1 阶跃后的整条曲线，延迟被忽略会提前响应；D3 合计 0.30"},
+    "test_outputs.py::test_transient_b": {"weight": 0.075, "rationale": "D3 输运延迟+惯性：S2 更远测点，延迟更长"},
+    "test_outputs.py::test_transient_c": {"weight": 0.075, "rationale": "D3 输运延迟+惯性：小管径快延迟工况的 S1"},
+    "test_outputs.py::test_transient_d": {"weight": 0.075, "rationale": "D3 输运延迟+惯性：同一工况的 R0 回水侧，检验双侧延迟"}
+  }
+}

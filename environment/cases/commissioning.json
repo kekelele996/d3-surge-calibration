@@ -1,0 +1,129 @@
+{
+  "case_id": "commissioning",
+  "fluid": {
+    "density": 971.8,
+    "specific_heat": 4190.0,
+    "kinematic_viscosity": 3.5e-07
+  },
+  "ambient": {
+    "ground_temperature": 5.0
+  },
+  "plant": {
+    "supply_temperature": 90.0,
+    "node_supply": "S0",
+    "node_return": "R0",
+    "pump": {
+      "curve": [
+        [
+          0,
+          30
+        ],
+        [
+          10,
+          28
+        ],
+        [
+          20,
+          22
+        ]
+      ],
+      "speed": 1.0
+    }
+  },
+  "pipes": [
+    {
+      "id": "PS1",
+      "from": "S0",
+      "to": "S1",
+      "length": 400,
+      "diameter": 0.2,
+      "roughness": 0.0001,
+      "minor_loss": 2.0,
+      "insulation": {
+        "thickness": 0.05,
+        "conductivity": 0.04
+      }
+    },
+    {
+      "id": "PS2",
+      "from": "S1",
+      "to": "S2",
+      "length": 300,
+      "diameter": 0.15,
+      "roughness": 0.0001,
+      "minor_loss": 2.0,
+      "insulation": {
+        "thickness": 0.05,
+        "conductivity": 0.04
+      }
+    },
+    {
+      "id": "PR1",
+      "from": "R1",
+      "to": "R0",
+      "length": 400,
+      "diameter": 0.2,
+      "roughness": 0.0001,
+      "minor_loss": 2.0,
+      "insulation": {
+        "thickness": 0.05,
+        "conductivity": 0.04
+      }
+    },
+    {
+      "id": "PR2",
+      "from": "R2",
+      "to": "R1",
+      "length": 300,
+      "diameter": 0.15,
+      "roughness": 0.0001,
+      "minor_loss": 2.0,
+      "insulation": {
+        "thickness": 0.05,
+        "conductivity": 0.04
+      }
+    }
+  ],
+  "consumers": [
+    {
+      "id": "C1",
+      "node_supply": "S1",
+      "node_return": "R1",
+      "heat_load": 120000,
+      "valve": {
+        "position": 1.0,
+        "kv": 0.00025
+      }
+    },
+    {
+      "id": "C2",
+      "node_supply": "S2",
+      "node_return": "R2",
+      "heat_load": 90000,
+      "valve": {
+        "position": 1.0,
+        "kv": 0.00022
+      }
+    }
+  ],
+  "measurement": {
+    "duration": 0.0,
+    "times": [
+      0.0
+    ],
+    "stations": [
+      {
+        "id": "S1",
+        "node": "S1"
+      },
+      {
+        "id": "S2",
+        "node": "S2"
+      },
+      {
+        "id": "R0",
+        "node": "R0"
+      }
+    ]
+  }
+}
