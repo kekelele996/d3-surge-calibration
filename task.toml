@@ -1,24 +1,34 @@
 schema_version = "1.3"
+artifacts = []
+
+[task]
 name = "local/d3-district-heating"
 description = "D.3 区域供热管网：多环水力、泵曲线/阀门、沿程热损、输运延迟与节点混合"
-version = "0.1.0"
+keywords = ["district heating", "hydraulic network", "thermal transient", "pump curve"]
+[[task.authors]]
+name = "高博"
 
 [metadata]
 author_name = "高博"
-author_email = "gaobo@local"
-difficulty = "hard"
-category = "D.3 物理模拟"
+author_email = "unknown"
+difficulty = "expert"
+category = "physics-simulation"
 tags = ["physics", "district-heating", "hydraulic", "thermal", "network"]
 expert_time_estimate = "5h"
+expert_time_estimate_min = 300
+junior_time_estimate_min = 0
+
+[verifier]
+timeout_sec = 900
+environment_mode = "shared"
+user = "root"
+collect = []
+
+[verifier.env]
 
 [agent]
 timeout_sec = 2400
 user = "runner"
-
-[verifier]
-timeout_sec = 900
-user = "root"
-environment_mode = "shared"
 
 [environment]
 build_timeout_sec = 900
