@@ -1,3 +1,4 @@
+schema_version = "1.3"
 name = "local/d3-district-heating"
 description = "D.3 区域供热管网：多环水力、泵曲线/阀门、沿程热损、输运延迟与节点混合"
 version = "0.1.0"
