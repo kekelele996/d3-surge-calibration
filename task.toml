@@ -19,7 +19,7 @@ expert_time_estimate_min = 300
 junior_time_estimate_min = 0
 
 [verifier]
-timeout_sec = 900
+timeout_sec = 600
 environment_mode = "shared"
 user = "root"
 collect = []
@@ -27,9 +27,13 @@ collect = []
 [verifier.env]
 
 [agent]
-timeout_sec = 2400
+timeout_sec = 1800
 user = "runner"
 
 [environment]
 build_timeout_sec = 900
 allow_internet = true
+cpus = 1
+memory_mb = 2048
+storage_mb = 4096
+gpus = 0
