@@ -1,0 +1,10 @@
+# 构建上下文只保留 app/ 和 cases/；测试、参考解、研究材料不进镜像。
+tests/
+solution/
+research/
+audit/
+runs/
+delivery/
+*.md
+__pycache__/
+*.pyc
