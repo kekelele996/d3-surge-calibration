@@ -56,6 +56,7 @@ def max_diff(a, b):
 # ---------- gate ----------
 
 def test_output_schema():
+    """"报告是 JSON 对象，字段就这些，不多不少""""
     got = run_case("commissioning")
     fields = {"case_id", "pipe_flows_kg_s", "node_pressures_kpa", "pump_head_kpa",
               "pump_flow_kg_s", "consumer_flow_kg_s", "consumer_heat_kw",
@@ -65,6 +66,7 @@ def test_output_schema():
 
 
 def test_wrong_argument_count_exits_2():
+    """"参数个数不对就退 2""""
     tmp = Path(tempfile.mkdtemp(prefix="dhn-arg-"))
     os.chmod(tmp, 0o777)
     try:
@@ -76,12 +78,14 @@ def test_wrong_argument_count_exits_2():
 
 
 def test_repeatable_output():
+    """"同一个算例跑两遍结果要完全一样""""
     a = run_case("commissioning")
     b = run_case("commissioning")
     assert json.dumps(a, sort_keys=True) == json.dumps(b, sort_keys=True)
 
 
 def test_report_is_json_object():
+    """"报告是 JSON 对象""""
     got = run_case("commissioning")
     assert isinstance(got, dict)
 
@@ -89,12 +93,14 @@ def test_report_is_json_object():
 # ---------- D1: multi-loop hydraulic ----------
 
 def test_loop_flow_a():
+    """"环路边的流量不能当成零""""
     got = run_case("hyd_1")
     want = expected("hyd_1")
     assert abs(got["pipe_flows_kg_s"].get("PS3", 0.0) - want["pipe_flows_kg_s"]["PS3"]) <= 0.03
 
 
 def test_loop_flow_b():
+    """"多环水力""""
     got = run_case("hyd_2")
     want = expected("hyd_2")
     assert abs(got["pipe_flows_kg_s"].get("PR3", 0.0) - want["pipe_flows_kg_s"]["PR3"]) <= 0.03
@@ -109,12 +115,14 @@ def test_loop_pressure_c():
 # ---------- D2: heat loss + mixing ----------
 
 def test_supply_temp_a():
+    """"保温层要真的算进沿程热损""""
     got = run_case("therm_1")
     want = expected("therm_1")
     assert abs(got["supply_temperatures_c"]["S1"] - want["supply_temperatures_c"]["S1"]) <= 0.3
 
 
 def test_plant_return_b():
+    """"节点混合按流量加权""""
     got = run_case("therm_2")
     want = expected("therm_2")
     assert abs(got["plant_return_c"] - want["plant_return_c"]) <= 0.3
@@ -129,6 +137,7 @@ def test_return_temp_c():
 # ---------- D3: transport delay + inertia ----------
 
 def test_transient_a():
+    """"瞬态要保留管段的输运延迟和热惯性""""
     got = run_case("trans_1")
     want = expected("trans_1")
     assert max_diff(got["station_temperatures"]["S1"], want["station_temperatures"]["S1"]) <= 1.5
@@ -141,6 +150,7 @@ def test_transient_b():
 
 
 def test_transient_c():
+    """"supply_profile / load_profile 是阶跃或折线""""
     got = run_case("trans_3")
     want = expected("trans_3")
     assert max_diff(got["station_temperatures"]["S1"], want["station_temperatures"]["S1"]) <= 1.5
